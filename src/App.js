@@ -1,6 +1,20 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 
+const handleFile = (file) => {
+  let reader = new FileReader()
+  reader.readAsArrayBuffer(file)
+  reader.onloadend = function() {
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext
+    const context = new AudioContext()
+
+    context.decodeAudioData(reader.result, function(buffer) {
+      console.log(buffer)
+    });
+  }
+}
+
 const AudioVisualizer = () => {
   return (
     <div
@@ -10,6 +24,13 @@ const AudioVisualizer = () => {
       <div
         className="audioVisualizer"
         style={styles.audioVisualizer}
+        onDragStart={(e) => e.preventDefault()}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault()
+          const file = e.dataTransfer.files[0]
+          handleFile(file)
+        }}
       >
         <h1 style={styles.h1}>Drop file here</h1>
       </div>
