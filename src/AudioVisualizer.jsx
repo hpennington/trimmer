@@ -44,6 +44,10 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
   },
+  h1: {
+    fontFamily: 'sans-serif',
+    color: '#777',
+  },
 }
 
 export default AudioVisualizer

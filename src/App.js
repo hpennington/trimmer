@@ -63,10 +63,6 @@ const styles = {
   exportButton: {
     margin: 'auto',
   },
-  h1: {
-    fontFamily: 'sans-serif',
-    color: '#777',
-  },
 }
 
 export default App;
