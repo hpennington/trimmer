@@ -1,12 +1,17 @@
 import React from 'react'
+import Spinner from 'react-bootstrap/Spinner';
 import Waveform from './Waveform.jsx'
+
+const SPINNER = 'SPINNER'
+const WAVEFORM = 'WAVEFORM'
+const DROP_MESSAGE = 'DROP_MESSAGE'
 
 class AudioVisualizer extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      showWaveform: false,
+      display: DROP_MESSAGE,
       dataPoints: [],
     }
 
@@ -14,6 +19,7 @@ class AudioVisualizer extends React.Component {
   }
 
   handleFile(file) {
+    this.setState({display: SPINNER})
     let reader = new FileReader()
     reader.readAsArrayBuffer(file)
     reader.onloadend = function() {
@@ -38,7 +44,7 @@ class AudioVisualizer extends React.Component {
         // Add data to setState
         console.log(dataPoints)
         this.setState({
-          showWaveform: true,
+          display: WAVEFORM,
           dataPoints: dataPoints,
         })
 
@@ -50,9 +56,20 @@ class AudioVisualizer extends React.Component {
     const w = this.props.width
     const h = this.props.height
 
-    let component = (this.state.showWaveform === true)
-      ? <Waveform data={this.state.dataPoints} width={w} height={h} />
-      : <h1 style={styles.h1}>Drop file here</h1>
+    let component = ''
+    switch (this.state.display) {
+      case DROP_MESSAGE:
+        component = <h1 style={styles.h1}>Drop file here</h1>
+        break
+      case SPINNER:
+        component = <Spinner animation="border" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </Spinner>
+        break
+      case WAVEFORM:
+        component = <Waveform data={this.state.dataPoints} width={w} height={h} />
+        break
+    }
 
     return (
       <div
