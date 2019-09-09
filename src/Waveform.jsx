@@ -24,11 +24,22 @@ class Waveform extends React.Component {
     })
 
     var playhead = new Konva.Rect({
-        x: this.playheadX() * 0.9,
-        y: 0,
-        width: 2,
-        height: this.props.height,
-        fill: 'black',
+      x: this.playheadX() * 0.9,
+      y: 0,
+      width: 4,
+      height: this.props.height,
+      fill: 'black',
+      draggable: true,
+      dragBoundFunc: function(pos) {
+        var newX = (pos.x <= this.props.width * 0.020)
+          ? this.props.width * 0.020 : pos.x
+        newX = newX >= this.props.width * 0.98 ? this.props.width * 0.98 : newX
+
+        return {
+          x: newX,
+          y: 0,
+        };
+      }.bind(this),
     })
 
     var layer = new Konva.Layer();
