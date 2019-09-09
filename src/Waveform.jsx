@@ -1,27 +1,44 @@
 import React from 'react'
+import Konva from 'konva'
 
 class Waveform extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {playheadPosition: 0.0}
-
-    this.clickPadding = 5
-
-    this.onClick = this.onClick.bind(this)
   }
 
   componentDidMount() {
-    this.draw()
+    var stage = new Konva.Stage({
+      container: 'konvaContainer',
+      width: this.props.width,
+      height: this.props.height,
+    })
+
+    const rect = new Konva.Shape({
+       width: this.props.width,
+       height: this.props.height,
+        sceneFunc: (ctx, shape) => {
+          this.draw(ctx)
+       }
+    })
+
+    var playhead = new Konva.Rect({
+        x: this.playheadX() * 0.9,
+        y: 0,
+        width: 2,
+        height: this.props.height,
+        fill: 'black',
+    })
+
+    var layer = new Konva.Layer();
+    layer.add(rect)
+    layer.add(playhead)
+    stage.add(layer)
+    layer.draw()
   }
 
-  componentDidUpdate() {
-    this.draw()
-  }
-
-  draw() {
-    const canvas = this.refs.canvas
-    const ctx = canvas.getContext('2d')
+  draw(ctx) {
     const w = this.props.width
     const h = this.props.height
 
@@ -41,8 +58,6 @@ class Waveform extends React.Component {
       ctx.strokeStyle = 'black'
       ctx.lineWidth = 4
 
-      this.drawPlayhead(ctx)
-
       ctx.closePath()
       ctx.stroke()
     }
@@ -61,41 +76,17 @@ class Waveform extends React.Component {
     }
   }
 
-  drawPlayhead(ctx) {
-    const x = this.playheadX()
-    console.log({x})
-    ctx.moveTo(x, 0)
-    ctx.lineTo(x, this.props.height)
-  }
-
   playheadX() {
     const w = this.props.width
     return (w * 0.025) + (this.state.playheadPosition * w)
   }
 
-  onClick(e) {
-    this.detectPlayheadHit(e.clientX)
-  }
-
-  detectPlayheadHit(x) {
-    if (x === this.playheadX()) {
-      console.log('hit')
-    } else if (x < this.playheadX() && x + this.clickPadding >= this.playheadX()) {
-      console.log('hit')
-    } else if (x > this.playheadX() && x - this.clickPadding <= this.playheadX()) {
-      console.log('hit')
-    }
-  }
-
   render() {
     return (
-      <canvas
-        onClick={this.onClick}
-        width={this.props.width}
-        height={this.props.height}
-        ref="canvas"
+      <div
+        id="konvaContainer"
       >
-      </canvas>
+      </div>
     )
   }
 }
