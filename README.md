@@ -1,3 +1,4 @@
+![alt text](https://github.com/hpennington/trimmer/raw/master/waveform.png "Audio waveform")
 
 ### `npm start`
 
