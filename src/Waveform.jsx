@@ -5,10 +5,26 @@ class Waveform extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {playheadPosition: 0.0}
+    this.state = {
+      playheadPosition: 0.0,
+      mask0: {
+        width: 20,
+      },
+      mask1: {
+        width: 20,
+      }
+    }
   }
 
   componentDidMount() {
+    this.drawKonva()
+  }
+
+  componentDidUpdate() {
+    this.drawKonva()
+  }
+
+  drawKonva() {
     var stage = new Konva.Stage({
       container: 'konvaContainer',
       width: this.props.width,
@@ -34,7 +50,7 @@ class Waveform extends React.Component {
         var newX = (pos.x <= this.props.width * 0.020)
           ? this.props.width * 0.020 : pos.x
         newX = newX >= this.props.width * 0.98 ? this.props.width * 0.98 : newX
-
+        this.setState({playheadPosition: newX / this.props.width})
         return {
           x: newX,
           y: 0,
@@ -42,9 +58,69 @@ class Waveform extends React.Component {
       }.bind(this),
     })
 
+    var mask0Handle = new Konva.Rect({
+      x: this.state.mask0.width,
+      y: this.props.height * 0.05,
+      width: 4,
+      height: this.props.height * 0.9,
+      fill: 'gray',
+      draggable: true,
+    })
+
+    var mask0 = new Konva.Rect({
+      x: 0,
+      y: this.props.height * 0.05,
+      width: this.state.mask0.width,
+      height: this.props.height * 0.9,
+      fill: 'gray',
+      opacity: 0.4,
+    })
+
+    mask0Handle.on('dragmove', () => {
+      this.setState(state => {
+        return {
+          mask0: {
+            width: stage.getPointerPosition().x
+          }
+        }
+      })
+    })
+
+    var mask1Handle = new Konva.Rect({
+      x: this.state.mask0.width,
+      y: this.props.height * 0.05,
+      width: 4,
+      height: this.props.height * 0.9,
+      fill: 'gray',
+      draggable: true,
+    })
+
+    var mask1 = new Konva.Rect({
+      x: this.props.width * 0.9,
+      y: this.props.height * 0.05,
+      width: this.state.mask1.width,
+      height: this.props.height * 0.9,
+      fill: 'gray',
+      opacity: 0.4,
+    })
+
+    mask1Handle.on('dragmove', () => {
+      this.setState(state => {
+        return {
+          mask0: {
+            width: stage.getPointerPosition().x
+          }
+        }
+      })
+    })
+
     var layer = new Konva.Layer();
     layer.add(rect)
     layer.add(playhead)
+    layer.add(mask0)
+    layer.add(mask1)
+    layer.add(mask0Handle)
+    layer.add(mask1Handle)
     stage.add(layer)
     layer.draw()
   }
